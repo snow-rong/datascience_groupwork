@@ -215,17 +215,6 @@ class MainUi(QtWidgets.QMainWindow):#设计GUI
         self.setWindowFlag(QtCore.Qt.FramelessWindowHint)  # 隐藏边框
         self.main_layout.setSpacing(0)
 
-    #def search(self):#查询响应
-
-    #if house_name:
-     #      self.house_search(house_name);
-     #   else:
-     #       msg_box = QtWidgets.QMessageBox;
-     #       msg_box.information(self.search_push_button, "错误", "请输入房屋信息",QMessageBox.Yes | QMessageBox.No)
-
-     #    def house_search(msg):  # 查询响应
-    #    infomation = self.right_bar_widget_search_input.text;
-
     def condition(self):#条件响应
         up_prince_input=self.lineEdit_ID1.text();
         down_square_input=self.lineEdit_ID2.text();
@@ -283,6 +272,9 @@ class MainUi(QtWidgets.QMainWindow):#设计GUI
                     self.text_browser.append("<font color='black'>" +msg[j]);
                     self.text_browser.repaint();
                 self.text_browser.append("\n");
+        else:
+            msg_box = QtWidgets.QMessageBox;
+            msg_box.information(self.search_push_button, "没找到对象", "未找到符合条件的房屋，请更改条件后再试", QMessageBox.Yes | QMessageBox.No)
 
 
 
