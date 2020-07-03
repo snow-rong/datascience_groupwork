@@ -39,6 +39,7 @@ class Spider():
         # 得到各区的url链接及区名
         region_list = []
         response = self.downloadPage()
+
         bsoup = bs4.BeautifulSoup(response, 'lxml')
         region = bsoup.find('div', class_='items').find('span', class_='elems-l').find_all('a')
         for i in region:
@@ -52,11 +53,15 @@ class Spider():
         # 获取该区域二手房的信息数据
         print("--------------------------------------%s-------------------------------" % name)
         house_info = []
+        _url_=self.url
         for i in range(1, 21):
+            self.url = self.url + "p" + str(i) + "/#filtersort"
 
-            self.url = self.url + "p" + str(i) + "#filtersort"
             print("开始爬取安居客平台北京%s二手房第%s页信息....." % (name, str(i)))
+
             response = self.downloadPage()
+
+            self.url=_url_
             # 生成bs4对象
             bsoup = bs4.BeautifulSoup(response, 'lxml')
 
@@ -65,7 +70,6 @@ class Spider():
             for house in house_list:
                 # bs4解析文件
                 titile = house.find('a').text.strip()
-
 
                 house_type = house.find('div', class_='details-item').span.text  #房子标题
 
@@ -93,7 +97,11 @@ class Spider():
                 else:
                     tags='NAN'
 
-                address = house.find('span', class_='comm-address').text.strip()#获取地址
+                try:
+                    address = house.find('span', class_='comm-address').text.strip()#获取地址
+                    address = address.replace('\xa0\xa0\n', ' ')
+                except:
+                    address='NAN'
 
                 price = house.find('span', class_='price-det').text.strip()#获取房子总价
 
@@ -121,12 +129,19 @@ if __name__ == '__main__':
     spider=Spider(url)#爬虫类
     region_list = spider.get_region()#获取各区信息
     writer = pd.ExcelWriter(r'd:\\bj_house_info.xlsx')#存放位置
+    # dic=region_list[-1]
+    # url = dic.get('href')
+    # name = dic.get('name')
+    # spider.__init__(url)
+    # house_info = spider.get_info(name, writer)  # 获取房屋信息
+    # house_info.to_excel(writer, sheet_name=name)#存入excel文件，各区存放在不同的表中
     for dic in region_list:
         url = dic.get('href')
         name = dic.get('name')
         spider.__init__(url)
         house_info = spider.get_info(name, writer)#获取房屋信息
         house_info.to_excel(writer, sheet_name=name)#存入excel文件，各区存放在不同的表中
+
     writer.save()#保存信息
     writer.close()#关闭
     print("爬取完毕")
