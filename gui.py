@@ -2,6 +2,8 @@
 
 import requests
 import re
+import spider
+from TitleBar import *
 import os,xlrd
 import pandas as pd
 import numpy as np
@@ -13,6 +15,7 @@ from PyQt5.QtGui import QIcon,QFont
 from PyQt5.QtCore import QCoreApplication
 from PyQt5 import QtCore,QtGui,QtWidgets
 import sys
+from PyQt5.QtMultimedia import QMediaPlayer,QMediaContent,QMediaPlaylist
 import qtawesome
 
 class MainUi(QtWidgets.QMainWindow):#设计GUI
@@ -22,11 +25,25 @@ class MainUi(QtWidgets.QMainWindow):#设计GUI
         super().__init__()
         self.init_ui()
 
+
     def init_ui(self):
+        #设置背景音乐，并设置其音量为25
+        mp3file = "Sea, You & Me.mp3"
+        self.playlist = QMediaPlaylist()#设置播放列表
+        self.playlist.addMedia(QMediaContent(QUrl.fromLocalFile(mp3file)))#单曲循环
+        self.playlist.setPlaybackMode(QMediaPlaylist.Loop)#设置播放模式为循环播放
+        self.player = QMediaPlayer()
+        self.player.setPlaylist(self.playlist)#在播放器中载入播放列表
+        self.player.setVolume(25)#设置音量值为25
+        self.player.play()
+
+
         self.setFixedSize(960,700)
         self.main_widget = QtWidgets.QWidget()  # 创建窗口主部件
         self.main_layout = QtWidgets.QGridLayout()  # 创建主部件的网格布局
         self.main_widget.setLayout(self.main_layout)  # 设置窗口主部件布局为网格布局
+        self.top_widget = QtWidgets.QWidget()  # 创建顶部插件
+        self.top_widget.setObjectName('top_widget')
 
         self.left_widget = QtWidgets.QWidget()  # 创建左侧部件
         self.left_widget.setObjectName('left_widget')
@@ -37,37 +54,34 @@ class MainUi(QtWidgets.QMainWindow):#设计GUI
         self.right_widget.setObjectName('right_widget')
         self.right_layout = QtWidgets.QGridLayout()
         self.right_widget.setLayout(self.right_layout) # 设置右侧部件布局为网格
-
-        self.main_layout.addWidget(self.left_widget,0,0,12,2) # 左侧部件在第0行第0列，占8行3列
-        self.main_layout.addWidget(self.right_widget,0,2,12,10) # 右侧部件在第0行第3列，占8行9列
+        self.main_layout.addWidget(self.top_widget, 0,0,12,12)
+        self.main_layout.addWidget(self.left_widget,1,0,12,2) # 左侧部件在第1行第0列，占8行3列
+        self.main_layout.addWidget(self.right_widget,1,2,12,10) # 右侧部件在第1行第3列，占8行9列
         self.setCentralWidget(self.main_widget) # 设置窗口主部件
 
-        self.left_close = QtWidgets.QPushButton("")  # 关闭按钮
-        self.left_close.clicked.connect(QCoreApplication.instance().quit)#设置关闭按钮响应
-        self.left_normal = QtWidgets.QPushButton("")  # 还原按钮
-        self.left_normal.clicked.connect(self.showNormal);
-        self.left_max = QtWidgets.QPushButton("")  # 最大化按钮
-        self.left_max.clicked.connect(self.showMaximized);
-        self.left_close.setFixedSize(15, 15)  # 设置关闭按钮的大小
-        self.left_normal.setFixedSize(15, 15)  # 设置最小化按钮大小
-        self.left_max.setFixedSize(15, 15)  # 设置最大化按钮大小
-        self.left_close.setStyleSheet(#设置按钮属性
-            '''QPushButton{background:#F76677;border-radius:5px;}QPushButton:hover{background:red;}''')
-        self.left_normal.setStyleSheet(
-            '''QPushButton{background:#F7D674;border-radius:5px;}QPushButton:hover{background:yellow;}''')
-        self.left_max.setStyleSheet(
-            '''QPushButton{background:#6DDF6D;border-radius:5px;}QPushButton:hover{background:green;}''')
+        self.search_push_button1 = QPushButton(self.tr("启动爬虫"))#设置启动爬虫按钮
+        #按钮设置
+        self.search_push_button1.setStyleSheet(""
+                                               "QPushButton{background-color:white;color: black;"
+                                               "border-radius: 7px; "
+                                               "border: 2px groove gray; "
+                                               "border-style: outset;}"
+                                               "QPushButton:hover{background-color:#A6FFFF; color: black;}"
+                                               "QPushButton:pressed{background-color:red;border-style: inset; }");
+        self.search_push_button1.setIcon(QIcon("win.png"));
+        self.left_layout.addWidget(self.search_push_button1, 0, 1, 1, 1)
 
         font = QtGui.QFont()
         font.setFamily("Agency FB")
         font.setPointSize(11)
         font1 = QtGui.QFont()
         font1.setFamily("KaiTi")
-        font1.setPointSize(8)
+        font1.setPointSize(9)
         self.left_label_1 = QtWidgets.QPushButton("房价")
         self.left_label_1.setObjectName('left_label')
         self.lineEdit_ID1 = QtWidgets.QLineEdit(self.left_widget)
-        self.lineEdit_ID1.setGeometry(QtCore.QRect(30, 200, 100, 30))
+        #self.left_layout.addWidget(self.lineEdit_ID1, 2, 0,1,1)#可随比例变化(难看)
+        self.lineEdit_ID1.setGeometry(QtCore.QRect(25, 195, 100, 30))#不可随比例变化(不难看)
         self.lineEdit_ID1.setFont(font1)
         self.lineEdit_ID1.setObjectName("lineEdit_ID1")
         self.lineEdit_ID1.setPlaceholderText("总价上限/万元")
@@ -75,7 +89,8 @@ class MainUi(QtWidgets.QMainWindow):#设计GUI
         self.left_label_2 = QtWidgets.QPushButton("面积")
         self.left_label_2.setObjectName('left_label')
         self.lineEdit_ID2 = QtWidgets.QLineEdit(self.left_widget)
-        self.lineEdit_ID2.setGeometry(QtCore.QRect(30, 300, 100, 30))
+        #self.left_layout.addWidget(self.lineEdit_ID2, 4, 0,1,1)
+        self.lineEdit_ID2.setGeometry(QtCore.QRect(25, 290, 100, 30))
         self.lineEdit_ID2.setFont(font1)
         self.lineEdit_ID2.setObjectName("lineEdit_ID2")
         self.lineEdit_ID2.setPlaceholderText("面积下限/m²")
@@ -83,7 +98,9 @@ class MainUi(QtWidgets.QMainWindow):#设计GUI
         self.left_label_3 = QtWidgets.QPushButton("楼层")
         self.left_label_3.setObjectName('left_label')
         self.comboBox_Dept3 = QtWidgets.QComboBox(self.left_widget)
-        self.comboBox_Dept3.setGeometry(QtCore.QRect(30, 400, 100, 30))
+        self.comboBox_Dept3.resize(100,30)
+       #self.left_layout.addWidget(self.comboBox_Dept3, 6, 0, 1, 1)
+        self.comboBox_Dept3.setGeometry(QtCore.QRect(25, 385, 100, 30))
         self.comboBox_Dept3.setFont(font)
         self.comboBox_Dept3.setObjectName("comboBox_Dept3")
         self.comboBox_Dept3.addItem("任意")
@@ -94,7 +111,9 @@ class MainUi(QtWidgets.QMainWindow):#设计GUI
         self.left_label_4 = QtWidgets.QPushButton("区域")
         self.left_label_4.setObjectName('left_label')
         self.comboBox_Dept1 = QtWidgets.QComboBox(self.left_widget )
-        self.comboBox_Dept1.setGeometry(QtCore.QRect(25, 500, 102, 30))
+        self.comboBox_Dept1.resize(100,30)
+        #self.left_layout.addWidget(self.comboBox_Dept1, 8, 0, 1, 1)
+        self.comboBox_Dept1.setGeometry(QtCore.QRect(25, 480, 100, 30))
         self.comboBox_Dept1.setFont(font)
         self.comboBox_Dept1.setObjectName("comboBox_Dept1")
         self.comboBox_Dept1.addItem("任意")
@@ -119,7 +138,9 @@ class MainUi(QtWidgets.QMainWindow):#设计GUI
         self.left_label_5 = QtWidgets.QPushButton("户型")
         self.left_label_5.setObjectName('left_label')
         self.comboBox_Dept2 = QtWidgets.QComboBox(self.left_widget)
-        self.comboBox_Dept2.setGeometry(QtCore.QRect(25, 600, 102, 30))
+        self.comboBox_Dept2.resize(100,30)
+        #self.left_layout.addWidget(self.comboBox_Dept2, 10, 0, 1, 1)
+        self.comboBox_Dept2.setGeometry(QtCore.QRect(25, 575, 100, 30))
         self.comboBox_Dept2.setFont(font)
         self.comboBox_Dept2.setObjectName("comboBox_Dept2")
         self.comboBox_Dept2.addItem("任意")
@@ -130,12 +151,6 @@ class MainUi(QtWidgets.QMainWindow):#设计GUI
         self.comboBox_Dept2.addItem("5室")
         self.comboBox_Dept2.addItem("5室以上")
 
-
-
-        self.left_layout.addWidget(self.left_max, 0, 0, 1, 1)
-        self.left_layout.addWidget(self.left_close, 0, 2, 1, 1)
-        self.left_layout.addWidget(self.left_normal, 0, 1, 1, 1)
-
         self.left_layout.addWidget(self.left_label_1, 1, 0, 1, 3)
         self.left_layout.addWidget(self.left_label_2, 3, 0, 1, 3)
         self.left_layout.addWidget(self.left_label_3, 5, 0, 1, 3)
@@ -145,20 +160,25 @@ class MainUi(QtWidgets.QMainWindow):#设计GUI
         self.right_bar_widget = QtWidgets.QWidget()  # 右侧顶部搜索框部件
         self.right_bar_layout = QtWidgets.QGridLayout()  # 右侧顶部搜索框网格布局
         self.right_bar_widget.setLayout(self.right_bar_layout)
-        self.search_push_button= QPushButton(self.tr("查询"))
-        self.search_push_button.setStyleSheet(""
-                                "QPushButton{background-color:white;color: black;"
-                                            "border-radius: 10px; "
-                                            "border: 2px groove gray; "
-                                            "border-style: outset;}"
-                                "QPushButton:hover{background-color:black; color: white;}"
-                                "QPushButton:pressed{background-color:rgb(85, 170, 255);border-style: inset; }");
+
+
+        self.search_push_button2= QPushButton(self.tr("查询"))
+        self.search_push_button2.setStyleSheet('''
+                                QPushButton{background-color:white;color: black;
+                                            border-radius: 10px; 
+                                            border: 2px groove gray; 
+                                            border-style: outset;}
+                                QPushButton:hover{background-color:black; color: white;}
+                                QPushButton:pressed{background-color:rgb(85, 170, 255);border-style: inset; }''');
+        self.search_push_button2.setIcon(QIcon("search.jpg"));
+
         self.right_bar_widget_search_input = QtWidgets.QLineEdit()
         self.right_bar_widget_search_input.setPlaceholderText("输入所需二手房的信息")
-        self.right_bar_layout.addWidget(self.search_push_button, 0, 0, 1, 1)
-        self.right_bar_layout.addWidget(self.right_bar_widget_search_input, 0, 1, 1, 8)
-        self.right_layout.addWidget(self.right_bar_widget, 0, 0, 1, 9)
-        self.search_push_button.clicked.connect(self.condition)
+        self.right_bar_layout.addWidget(self.search_push_button2, 1, 0, 1, 1)
+        self.right_bar_layout.addWidget(self.right_bar_widget_search_input, 1, 1, 1, 6)
+        self.right_layout.addWidget(self.right_bar_widget, 0, 0, 1, 7)
+        self.search_push_button1.clicked.connect(self.spider_start_up)
+        self.search_push_button2.clicked.connect(self.condition)
 
         self.right_recommend_widget = QtWidgets.QWidget()#设置输出文本框
         self.right_recommend_layout = QtWidgets.QGridLayout()
@@ -167,6 +187,31 @@ class MainUi(QtWidgets.QMainWindow):#设计GUI
         self.text_browser.setStyleSheet("background:transparent;border-width:0;border-style:outset;")
         self.right_recommend_layout.addWidget(self.text_browser, 0, 0)
         self.right_layout.addWidget(self.right_recommend_widget, 1, 0, 2, 9)
+
+        self.top_widget.setStyleSheet('''
+                           QWidget#top_widget{
+                              color:#232C51;
+                              background-image:url(time.png);
+                              background-size:cover;
+                              font-size:12px;
+                              border:2px solid #423f48;
+                              font: "KaiTi";
+                              margin:0px;
+                              border-top:1px solid darkGray;
+                              border-bottom:1px solid darkGray;
+                              border-right:1px solid darkGray;
+                              border-top-right-radius:10px;
+                              border-bottom-right-radius:10px;
+                              border-top-left-radius:10px;
+                              border-bottom-left-radius:10px;
+                           }
+                           QLabel#right_lable{
+                               border:none;
+                               font-size:16px;
+                               font-weight:700;
+                               font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+                           }
+                       ''')
 
         # 左侧部件具体设置
         self.left_widget.setStyleSheet('''
@@ -179,12 +224,13 @@ class MainUi(QtWidgets.QMainWindow):#设计GUI
                        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
                    }
                    QWidget#left_widget{
-                       background:black;
+                       color:#232C51;
+                       background-image:url(time1.jpg);
+                       background-size:cover;
                        border-top:1px solid white;
                        border-bottom:1px solid white;
                        border-left:1px solid white;
-                       border-top-left-radius:10px;
-                       border-bottom-left-radius:10px;
+                     
                    }
                    QPushButton#left_button:hover{border-left:4px solid red;font-weight:700;}
                ''')
@@ -199,8 +245,7 @@ class MainUi(QtWidgets.QMainWindow):#设计GUI
                        border-top:1px solid darkGray;
                        border-bottom:1px solid darkGray;
                        border-right:1px solid darkGray;
-                       border-top-right-radius:10px;
-                       border-bottom-right-radius:10px;
+                  
                    }
                    QLabel#right_lable{
                        border:none;
@@ -213,7 +258,31 @@ class MainUi(QtWidgets.QMainWindow):#设计GUI
         self.setWindowOpacity(0.9)  # 设置窗口透明度
         self.setAttribute(QtCore.Qt.WA_TranslucentBackground)  # 设置窗口背景透明
         self.setWindowFlag(QtCore.Qt.FramelessWindowHint)  # 隐藏边框
+        self.InitializeViews()  # 设置标题栏
         self.main_layout.setSpacing(0)
+
+    def InitializeViews(self):#标题栏初始化
+        self.titleBar = TitleBar(self)
+        self.lay = QVBoxLayout(self)
+        self.top_widget.setLayout(self.lay)
+        self.client = QWidget(self)
+        self.lay.addWidget(self.titleBar);
+        self.lay.addWidget(self.client);
+        self.lay.setStretch(1, 10);
+        self.lay.setSpacing(0);
+        self.lay.setContentsMargins(0, 0, 0, 0)
+
+        self.titleBar.SetIcon(QPixmap("win.png"));
+        self.titleBar.SetTitle("<font color='white'>"+"北京二手房爬虫");
+
+    def spider_start_up(self):
+        spider.start()
+        msg_box = QtWidgets.QMessageBox;
+        msg_box.information(self.search_push_button1, "爬取成功", "爬虫数据已成功导入本地", QMessageBox.Yes | QMessageBox.No)
+
+    def show_info(self,str):
+        self.text_browser.append("<font color='black'>" + str);
+        self.text_browser.repaint();
 
     def condition(self):#条件响应
         up_prince_input=self.lineEdit_ID1.text();
@@ -230,6 +299,7 @@ class MainUi(QtWidgets.QMainWindow):#设计GUI
         self.search(floor,type,area,house_info);
 
     def search(self,floor,type,area,house_info):
+        self.text_browser.clear();
         dl = xlrd.open_workbook(r'D:\house.xlsx')
         house_list=[];
         df=None;
@@ -269,12 +339,12 @@ class MainUi(QtWidgets.QMainWindow):#设计GUI
                 msg[5] = "修建时间:"+build_time;
                 msg[6]="特点:"+house_tags+'\n';
                 for j in range(7):
-                    self.text_browser.append("<font color='black'>" +msg[j]);
-                    self.text_browser.repaint();
+                    self.show_info(msg[j])
                 self.text_browser.append("\n");
         else:
             msg_box = QtWidgets.QMessageBox;
-            msg_box.information(self.search_push_button, "没找到对象", "未找到符合条件的房屋，请更改条件后再试", QMessageBox.Yes | QMessageBox.No)
+            msg_box.information(self.search_push_button2, "没找到对象", "未找到符合条件的房屋，请更改条件后再试", QMessageBox.Yes | QMessageBox.No)
+
 
 
 
