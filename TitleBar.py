@@ -19,14 +19,13 @@ class TitleBar(QWidget):
     def InitializeViews(self):
         self.iconLabel = QLabel(self)
         self.titleLabel = QLabel(self)
-
         self.minButton = QPushButton("")
         self.restoreButton = QPushButton("")
         self.closeButton = QPushButton("")
 
-        self.minButton.setFixedSize(20, 20);
-        self.restoreButton.setFixedSize(20, 20);
-        self.closeButton.setFixedSize(20, 20);
+        self.minButton.setFixedSize(15, 15);
+        self.restoreButton.setFixedSize(15, 15);
+        self.closeButton.setFixedSize(15, 15);
 
 
         self.iconLabel.setFixedSize(30, 30);
