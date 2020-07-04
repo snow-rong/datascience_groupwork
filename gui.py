@@ -21,16 +21,15 @@ class MainUi(QtWidgets.QMainWindow):#设计GUI
 
 
     def init_ui(self):
-        #设置背景音乐，并设置其音量为25
-        self.playlist = QMediaPlaylist()#设置播放列表
-        self.playlist.addMedia(QMediaContent(QUrl.fromLocalFile("holo_inochi_inst.wav")))
+        # 设置背景音乐，并设置其音量为25
+        self.playlist = QMediaPlaylist()  # 设置播放列表
+        self.playlist.addMedia(QMediaContent(QUrl.fromLocalFile("holo_inochi_inst.mp3")))
         self.playlist.addMedia(QMediaContent(QUrl.fromLocalFile("Sea, You & Me.mp3")))
-        self.playlist.setPlaybackMode(QMediaPlaylist.Loop)#设置播放模式为循环播放
+        self.playlist.setPlaybackMode(QMediaPlaylist.Loop)  # 设置播放模式为循环播放
         self.player = QMediaPlayer()
-        self.player.setPlaylist(self.playlist)#在播放器中载入播放列表
-        self.player.setVolume(25)#设置音量值为25，可在此调整音量大小
+        self.player.setPlaylist(self.playlist)  # 在播放器中载入播放列表
+        self.player.setVolume(25)  # 设置音量值为25，可在此调整音量大小
         self.player.play()
-
 
         self.setFixedSize(960,700)
         self.main_widget = QtWidgets.QWidget()  # 创建窗口主部件
@@ -52,7 +51,7 @@ class MainUi(QtWidgets.QMainWindow):#设计GUI
         self.main_layout.addWidget(self.left_widget,1,0,12,2) # 左侧部件在第1行第0列，占8行3列
         self.main_layout.addWidget(self.right_widget,1,2,12,10) # 右侧部件在第1行第3列，占8行9列
         self.setCentralWidget(self.main_widget) # 设置窗口主部件
-        # 字体设置
+        #字体设置
         font = QtGui.QFont()
         font.setFamily("Agency FB")
         font.setPointSize(11)
