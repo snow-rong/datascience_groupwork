@@ -28,7 +28,7 @@ class MainUi(QtWidgets.QMainWindow):#设计GUI
         self.playlist.setPlaybackMode(QMediaPlaylist.Loop)#设置播放模式为循环播放
         self.player = QMediaPlayer()
         self.player.setPlaylist(self.playlist)#在播放器中载入播放列表
-        self.player.setVolume(25)#设置音量值为25
+        self.player.setVolume(25)#设置音量值为25，可在此调整音量大小
         self.player.play()
 
 
@@ -52,15 +52,15 @@ class MainUi(QtWidgets.QMainWindow):#设计GUI
         self.main_layout.addWidget(self.left_widget,1,0,12,2) # 左侧部件在第1行第0列，占8行3列
         self.main_layout.addWidget(self.right_widget,1,2,12,10) # 右侧部件在第1行第3列，占8行9列
         self.setCentralWidget(self.main_widget) # 设置窗口主部件
-
-        font = QtGui.QFont()#字体设置
+        # 字体设置
+        font = QtGui.QFont()
         font.setFamily("Agency FB")
         font.setPointSize(11)
         font1 = QtGui.QFont()
         font1.setFamily("KaiTi")
         font1.setPointSize(9)
-
-        self.search_push_button0 = QPushButton(self.tr("图像描述"))  # 设置数据图形描述
+        # 设置数据图形描述及其下拉列表
+        self.search_push_button0 = QPushButton(self.tr("图像描述"))
         self.search_push_button0.setStyleSheet(""
                                                "QPushButton{background-color:white;color: black;"
                                                "border-radius: 7px; "
@@ -75,8 +75,8 @@ class MainUi(QtWidgets.QMainWindow):#设计GUI
         self.comboBox_Dept0.setFont(font)
         self.comboBox_Dept0.setObjectName("comboBox_Dept0")
         self.comboBox_Dept0.addItem("饼图")
+        self.comboBox_Dept0.addItem("柱状堆积图")
         self.comboBox_Dept0.addItem("价格条形图")
-        self.comboBox_Dept0.addItem("年代堆积图")
         self.comboBox_Dept0.addItem("价格箱线图")
 
         self.search_push_button1 = QPushButton(self.tr("启动爬虫"))#设置启动爬虫按钮
@@ -90,7 +90,7 @@ class MainUi(QtWidgets.QMainWindow):#设计GUI
                                                "QPushButton:pressed{background-color:red;border-style: inset; }");
         self.search_push_button1.setIcon(QIcon("win.png"));
         self.left_layout.addWidget(self.search_push_button1, 0, 1, 1, 1)
-
+        #价格及其文本输入框设置
         self.left_label_1 = QtWidgets.QPushButton("房价")
         self.left_label_1.setObjectName('left_label')
         self.lineEdit_ID1 = QtWidgets.QLineEdit(self.left_widget)
@@ -99,7 +99,7 @@ class MainUi(QtWidgets.QMainWindow):#设计GUI
         self.lineEdit_ID1.setFont(font1)
         self.lineEdit_ID1.setObjectName("lineEdit_ID1")
         self.lineEdit_ID1.setPlaceholderText("总价上限/万元")
-
+        # 面积及其文本输入框设置
         self.left_label_2 = QtWidgets.QPushButton("面积")
         self.left_label_2.setObjectName('left_label')
         self.lineEdit_ID2 = QtWidgets.QLineEdit(self.left_widget)
@@ -108,7 +108,7 @@ class MainUi(QtWidgets.QMainWindow):#设计GUI
         self.lineEdit_ID2.setFont(font1)
         self.lineEdit_ID2.setObjectName("lineEdit_ID2")
         self.lineEdit_ID2.setPlaceholderText("面积下限/m²")
-
+        # 楼层及其下拉列表设置
         self.left_label_3 = QtWidgets.QPushButton("楼层")
         self.left_label_3.setObjectName('left_label')
         self.comboBox_Dept3 = QtWidgets.QComboBox(self.left_widget)
@@ -120,7 +120,7 @@ class MainUi(QtWidgets.QMainWindow):#设计GUI
         self.comboBox_Dept3.addItem("低层")
         self.comboBox_Dept3.addItem("中层")
         self.comboBox_Dept3.addItem("高层")
-
+        #区域及其下拉列表设置
         self.left_label_4 = QtWidgets.QPushButton("区域")
         self.left_label_4.setObjectName('left_label')
         self.comboBox_Dept1 = QtWidgets.QComboBox(self.left_widget )
@@ -147,7 +147,7 @@ class MainUi(QtWidgets.QMainWindow):#设计GUI
         self.comboBox_Dept1.addItem("东城")
         self.comboBox_Dept1.addItem("西城")
         self.comboBox_Dept1.addItem("北京周边")
-
+        #户型及其下拉列表设置
         self.left_label_5 = QtWidgets.QPushButton("户型")
         self.left_label_5.setObjectName('left_label')
         self.comboBox_Dept2 = QtWidgets.QComboBox(self.left_widget)
@@ -162,7 +162,7 @@ class MainUi(QtWidgets.QMainWindow):#设计GUI
         self.comboBox_Dept2.addItem("4室")
         self.comboBox_Dept2.addItem("5室")
         self.comboBox_Dept2.addItem("5室以上")
-
+        #设置各功能区位置
         self.left_layout.addWidget(self.left_label_1, 2, 0, 1, 3)
         self.left_layout.addWidget(self.left_label_2, 4, 0, 1, 3)
         self.left_layout.addWidget(self.left_label_3, 6, 0, 1, 3)
@@ -289,7 +289,7 @@ class MainUi(QtWidgets.QMainWindow):#设计GUI
         self.lay.setContentsMargins(0, 0, 0, 0)
         #将数据传输至标题栏程序，初始化标题栏
         self.titleBar.SetIcon(QPixmap("win.png"));
-        self.titleBar.SetTitle("<font color='white'>"+"北京二手房爬虫");
+        self.titleBar.SetTitle("<font color='white'>"+"北京二手房爬虫@PEX");
 
     def spider_start_up(self):#爬虫启动程序
         spider.start()
@@ -302,13 +302,13 @@ class MainUi(QtWidgets.QMainWindow):#设计GUI
 
     def get_all_area(self):
         dl = xlrd.open_workbook(r'D:\house.xlsx')
-        house_list = [];
+        house_list = [];#得到区域名
         for sheet in dl.sheets():
             house_list.append(sheet.name);
         return house_list;
 
     def getall(self,hl):
-        df = None;
+        df = None;#遍历sheets得到总体数据表
         for name in hl:
             df1 = pd.read_excel(r"D:\house.xlsx", sheet_name=name)
             df1['loc'] = name;
@@ -317,16 +317,16 @@ class MainUi(QtWidgets.QMainWindow):#设计GUI
 
     def condition(self):#条件响应
         #读取各筛选信息
-        up_prince_input=self.lineEdit_ID1.text();
-        down_square_input=self.lineEdit_ID2.text();
+        up_prince_input=self.lineEdit_ID1.text();#价格上限
+        down_square_input=self.lineEdit_ID2.text();#面积下限
         if up_prince_input:
             self.up_price=int(up_prince_input);
         if down_square_input:
             self.down_square=int(down_square_input);
-        floor=self.comboBox_Dept3.currentText();
-        type= self.comboBox_Dept2.currentText();
-        area= self.comboBox_Dept1.currentText();
-        house_info = self.right_bar_widget_search_input.text();
+        floor=self.comboBox_Dept3.currentText();#楼层情况
+        type= self.comboBox_Dept2.currentText();#类型
+        area= self.comboBox_Dept1.currentText();#区域
+        house_info = self.right_bar_widget_search_input.text();#具体地址
         self.search(floor,type,area,house_info);
 
     def search(self,floor,type,area,house_info):#信息检索函数
@@ -338,7 +338,7 @@ class MainUi(QtWidgets.QMainWindow):#设计GUI
             df['loc'] = area;
         else:
             df=self.getall(house_list);
-
+        #依次调用函数筛选数据列
         df=self.house_type(df,type);
         df=self.house_floor(df,floor);
         df=self.house_price(df);
@@ -368,6 +368,7 @@ class MainUi(QtWidgets.QMainWindow):#设计GUI
                 for j in range(7):#逐条添加，避免卡死情况
                     self.show_info(msg[j])
                 self.text_browser.append("\n");
+            self.text_browser.append("共"+str(len(df))+"条");
         else:
             msg_box = QtWidgets.QMessageBox;
             msg_box.information(self.search_push_button2, "没找到对象", "未找到符合条件的房屋，请更改条件后再试", QMessageBox.Yes | QMessageBox.No)
@@ -422,7 +423,7 @@ class MainUi(QtWidgets.QMainWindow):#设计GUI
         data = data[data['build_time'] != 'NAN']#去除建造时间为空的数据行
         for j in range(len(data)):
             #将字符类型转化为数值类型进行绘图工作
-            #先转化为纯数字字符形式
+            #先将各数据转化为纯数字字符串形式
             data['unit_price'].values[j] = re.findall(r'\d+', data['unit_price'].values[j])
             data['unit_price'].values[j] = int(''.join(data['unit_price'].values[j]))#每平米价格
             data['price'].values[j] = re.findall(r'\d+', data['price'].values[j])
@@ -432,9 +433,10 @@ class MainUi(QtWidgets.QMainWindow):#设计GUI
             #对于年代数据，根据建造时间按照其年数分类
             data['build_time'].values[j] = re.findall(r'\d+', data['build_time'].values[j])
             data['build_time'].values[j] = int(''.join(data['build_time'].values[j]))
-            if (data['build_time'].values[j] < 2000):
+            #对年代信息进行分类
+            if (int(data['build_time'].values[j] )< 2000):
                 data['build_time'].values[j] = '20年以上';
-            elif (data['build_time'].values[j] > 2015):
+            elif (int(data['build_time'].values[j]) > 2015):
                 data['build_time'].values[j] = '5年内';
             else:
                 data['build_time'].values[j] = '5-20年内';
