@@ -30,7 +30,7 @@ class MainUi(QtWidgets.QMainWindow):#设计GUI
         self.player.setPlaylist(self.playlist)  # 在播放器中载入播放列表
         self.player.setVolume(25)  # 设置音量值为25，可在此调整音量大小
         self.player.play()
-
+        #设置窗口大小固定
         self.setFixedSize(960,700)
         self.main_widget = QtWidgets.QWidget()  # 创建窗口主部件
         self.main_layout = QtWidgets.QGridLayout()  # 创建主部件的网格布局
