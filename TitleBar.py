@@ -3,8 +3,9 @@ from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from default import *
-
+#绿色的按钮是放大/还原，黄色是最小化，红色是关闭程序
 class TitleBar(QWidget):
+    #初始化TitleBar
     def __init__(self, parent):
         super(TitleBar, self).__init__()
         self.win = parent
@@ -19,14 +20,13 @@ class TitleBar(QWidget):
     def InitializeViews(self):
         self.iconLabel = QLabel(self)
         self.titleLabel = QLabel(self)
+        #设置三种按钮即其大小布局。以及图标的大小
         self.minButton = QPushButton("")
         self.restoreButton = QPushButton("")
         self.closeButton = QPushButton("")
-
         self.minButton.setFixedSize(15, 15);
         self.restoreButton.setFixedSize(15, 15);
         self.closeButton.setFixedSize(15, 15);
-
 
         self.iconLabel.setFixedSize(30, 30);
         self.titleLabel.setFixedHeight(20);
@@ -40,7 +40,7 @@ class TitleBar(QWidget):
             '''QPushButton{background:#F7D674;border-radius:5px;}QPushButton:hover{background:yellow;}''')
         self.restoreButton.setStyleSheet(
             '''QPushButton{background:#6DDF6D;border-radius:5px;}QPushButton:hover{background:green;}''')
-
+        #功能绑定
         self.minButton.clicked.connect(self.ShowMininizedWindow)
         self.restoreButton.clicked.connect(self.ShowRestoreWindow)
         self.closeButton.clicked.connect(self.CloseWindow)
@@ -55,7 +55,7 @@ class TitleBar(QWidget):
         self.lay.addWidget(self.restoreButton)
         self.lay.addWidget(self.minButton)
         self.lay.addWidget(self.closeButton)
-
+    #设置标题栏具体功能和对事件响应机制
     def ShowMininizedWindow(self):
         self.win.showMinimized()
 
@@ -98,9 +98,7 @@ class TitleBar(QWidget):
         if self.isPressed:
             if self.win.isMaximized:
                 self.win.showNormal()
-
             movePos = event.globalPos() - self.startPos
             self.startPos = event.globalPos()
             self.win.move(self.win.pos() + movePos)
-
         return QWidget().mouseMoveEvent(event)
