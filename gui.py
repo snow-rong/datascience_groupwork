@@ -76,7 +76,7 @@ class MainUi(QtWidgets.QMainWindow):#设计GUI
         self.comboBox_Dept0.setObjectName("comboBox_Dept0")
         self.comboBox_Dept0.addItem("饼图")
         self.comboBox_Dept0.addItem("价格条形图")
-        self.comboBox_Dept0.addItem("年代堆积柱状图")
+        self.comboBox_Dept0.addItem("年代堆积图")
         self.comboBox_Dept0.addItem("价格箱线图")
 
         self.search_push_button1 = QPushButton(self.tr("启动爬虫"))#设置启动爬虫按钮
